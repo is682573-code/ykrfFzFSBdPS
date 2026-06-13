@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Правовой портал ФСБ России | Строгий режим</title>
+    <style>
+        :root {
+            --bg-color: #0a0c10;
+            --surface-color: #141820;
+            --surface-hover: #1c212c;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-red: #8a1c1c;
+            --accent-blue: #1f6feb;
+            --border-color: #30363d;
+            --warning-bg: rgba(158, 106, 3, 0.15);
+            --warning-text: #d29922;
+            --success-bg: rgba(35, 134, 54, 0.15);
+            --success-text: #7ee787;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* НАВИГАЦИЯ */
+        .top-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            background-color: var(--surface-color);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover { background-color: var(--surface-hover); color: var(--text-primary); }
+        .nav-btn.active { background-color: var(--accent-red); border-color: var(--accent-red); color: white; }
+        .nav-btn.blue-active { background-color: var(--accent-blue); border-color: var(--accent-blue); color: white; }
+
+        /* СЕКЦИИ */
+        .page-section { display: none; animation: fadeIn 0.3s ease; }
+        .page-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 25px;
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            border-left: 6px solid var(--accent-red);
+        }
+        header.blue-header { border-left-color: var(--accent-blue); }
+
+        h1 { margin: 0; font-size: 1.6em; text-transform: uppercase; letter-spacing: 1.5px; }
+        .subtitle { color: var(--text-secondary); font-size: 0.85em; margin-top: 10px; font-family: 'Courier New', monospace; }
+        .subtitle span { color: var(--accent-red); font-weight: bold; }
+        .subtitle.blue-span { color: var(--accent-blue); }
+
+        /* ТАБЛИЦЫ */
+        .table-container {
+            overflow-x: auto;
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+        th {
+            background-color: #1c212c;
+            color: var(--accent-red);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8em;
+            cursor: pointer;
+            position: sticky;
+            top: 0;
+        }
+        th.blue-th { color: var(--accent-blue); }
+        th:hover { background-color: #252b36; }
+        tr:hover { background-color: var(--surface-hover); }
+
+        .legal-ref {
+            font-family: 'Courier New', monospace;
+            color: #79c0ff;
+            font-size: 0.85em;
+            display: block;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+        .category-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .cat-powers { background-color: rgba(138, 28, 28, 0.2); color: #ff7b72; border: 1px solid #8a1c1c; }
+        .cat-proced { background-color: rgba(31, 111, 235, 0.15); color: #79c0ff; border: 1px solid #1f6feb; }
+        .cat-ord { background-color: rgba(158, 106, 3, 0.2); color: #d29922; border: 1px solid #9e6a03; }
+        .cat-crime { background-color: rgba(138, 28, 28, 0.1); color: #ffa657; border: 1px solid #9e6a03; }
+
+        /* КАРТОЧКИ СТРУКТУРЫ */
+        .hierarchy-block { margin-bottom: 40px; }
+        .hierarchy-title {
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .hierarchy-title::before { content: ''; display: block; width: 8px; height: 8px; background-color: var(--accent-red); border-radius: 50%; }
+        .hierarchy-title.blue-title::before { background-color: var(--accent-blue); }
+
+        .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
+        .dept-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px;
+            transition: transform 0.2s;
+        }
+        .dept-card:hover { transform: translateY(-2px); border-color: var(--accent-red); }
+        .dept-card.blue-card { border-color: #1f6feb; background-color: rgba(31, 111, 235, 0.05); }
+        .dept-card.blue-card:hover { border-color: #58a6ff; }
+
+        .dept-abbr { font-size: 1.3em; font-weight: bold; color: var(--accent-red); margin: 0 0 5px 0; }
+        .blue-card .dept-abbr { color: #58a6ff; }
+        .dept-full-name { font-size: 0.9em; color: var(--text-primary); margin: 0 0 12px 0; font-style: italic; }
+        .dept-info-label { color: var(--text-secondary); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block; }
+        .dept-info-text { color: var(--text-primary); font-size: 0.85em; line-height: 1.5; margin: 0; }
+
+        .warning-box {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-text);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: var(--warning-text);
+            font-size: 0.9em;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .warning-box.blue-warning { border-color: var(--accent-blue); background-color: rgba(31, 111, 235, 0.1); color: #79c0ff; }
+
+        .footer-note { text-align: center; margin-top: 30px; color: var(--text-secondary); font-size: 0.8em; border-top: 1px solid var(--border-color); padding-top: 15px; }
+        
+        .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; justify-content: center; }
+        .filter-btn { background-color: var(--surface-color); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; font-size: 0.85em; }
+        .filter-btn:hover, .filter-btn.active { background-color: var(--accent-red); border-color: var(--accent-red); color: white; }
+    </style.
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <button class="nav-btn active" onclick="switchPage('powers', this)">⚖️ Полномочия и Документы</button>
+        <button class="nav-btn" onclick="switchPage('proced', this)">🔍 Следственные действия и ОРМ</button>
+        <button class="nav-btn" onclick="switchPage('crimes', this)">📜 Составы преступлений (УК РФ)</button>
+        <button class="nav-btn" onclick="switchPage('structure', this)" style="border-color: #1f6feb; color: #79c0ff;">🏢 Структура ФСБ</button>
+    </div>
+
+    <!-- ================= СТРАНИЦА 1: ПОЛНОМОЧИЯ ================= -->
+    <div id="powers-section" class="page-section active">
+        <header>
+            <h1>Полномочия сотрудника ФСБ</h1>
+            <div class="subtitle">ФЗ №40 «О ФСБ» · ФЗ №144 «Об ОРД» · <span>Строгое соответствие законодательству РФ</span></div>
+        </header>
+
+        <div class="table-container">
+            <table id="powersTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('powersTable', 0)">Ситуация / Действие ↕</th>
+                        <th onclick="sortTable('powersTable', 1)">Нормативная база ↕</th>
+                        <th onclick="sortTable('powersTable', 2)">Юридическое обоснование / Условия ↕</th>
+                        <th onclick="sortTable('powersTable', 3)">Строгий алгоритм действий ↕</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Проверка документов у гражданина</strong></td>
+                        <td><span class="legal-ref">Ч. 1 ст. 13 ФЗ №40 «О ФСБ»</span></td>
+                        <td>Проверка допускается ТОЛЬКО при наличии данных, дающих основания подозревать гражданина в совершении преступления, или если имеются данные, что гражданин находится в розыске.</td>
+                        <td>1. Представиться (должность, звание, ФИО).<br>2. По требованию гражданина предъявить служебное удостоверение.<br>3. Сообщить причину и цель проверки.<br>4. Дать возможность ознакомиться с документом.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Отказ в предъявлении удостоверения (Легенда)</strong></td>
+                        <td><span class="legal-ref">Ч. 5 ст. 5 ФЗ №144 «Об ОРД»</span></td>
+                        <td>Сотрудник участвует в оперативном внедрении, контрольной закупке или оперативном эксперименте. Предъявление реального удостоверения скомпрометирует мероприятие.</td>
+                        <td>1. Сообщить о проведении ОРМ.<br>2. Отказать в демонстрации настоящего удостоверения.<br>3. Разъяснить, что законность действий может быть проверена прокурором или адвокатом постфактум через руководителя ОРМ.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Отказ в названии подразделения</strong></td>
+                        <td><span class="legal-ref">Ст. 5, 11 Закона РФ «О гостайне»</span></td>
+                        <td>Сведения об организационно-штатной структуре, дислокации и принадлежности к конкретным управлениям ФСБ составляют государственную тайну.</td>
+                        <td>Обязан назвать ФИО и звание. Вправе отказать в названии конкретного отдела/управления, сославшись на режим секретности, если это не требуется для процессуальных действий.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Применение физической силы и спецсредств</strong></td>
+                        <td><span class="legal-ref">Ст. 14, 15 ФЗ №40 «О ФСБ»</span></td>
+                        <td>Для пресечения преступлений, задержания лиц, оказывающих вооруженное сопротивление, преодоления противодействия законной деятельности.</td>
+                        <td>1. Предупредить о намерении (голосом).<br>2. Применить силу, соразмерную угрозе.<br>3. Обеспечить оказание первой помощи.<br>4. Уведомить прокурора в течение 24 часов (при причинении вреда здоровью).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================= СТРАНИЦА 2: СЛЕДСТВЕННЫЕ ДЕЙСТВИЯ И ОРМ ================= -->
+    <div id="proced-section" class="page-section">
+        <header class="blue-header">
+            <h1>Следственные действия и ОРМ</h1>
+            <div class="subtitle">УПК РФ · ФЗ №144 «Об ОРД» · <span class="blue-span">Процессуальные гарантии и ограничения</span></div>
+        </header>
+
+        <div class="warning-box blue-warning">
+            <span>⚠️</span>
+            <div><strong>КРИТИЧЕСКИ ВАЖНО:</strong> Видеозапись <strong>НЕ ЗАМЕНЯЕТ</strong> понятых при личном обыске (ст. 184 УПК РФ). Замена понятых видеозаписью допускается только при обыске помещения (ст. 182 УПК РФ) и выемке (ст. 183 УПК РФ) на основании ч. 1.1 ст. 170 УПК РФ. Нарушение этого правила делает доказательство недопустимым (ст. 75 УПК РФ).</div>
+        </div>
+
+        <div class="table-container">
+            <table id="procedTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('procedTable', 0)" class="blue-th">Действие / ОРМ ↕</th>
+                        <th onclick="sortTable('procedTable', 1)" class="blue-th">Нормативная база ↕</th>
+                        <th onclick="sortTable('procedTable', 2)" class="blue-th">Условия и ограничения ↕</th>
+                        <th onclick="sortTable('procedTable', 3)" class="blue-th">Процессуальный порядок ↕</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Личный обыск</strong></td>
+                        <td><span class="legal-ref">Ст. 184 УПК РФ</span></td>
+                        <td>При наличии достаточных данных полагать, что при лице находятся орудия преступления или предметы, имеющие значение для дела.</td>
+                        <td><strong>Строго 2 понятых одного пола</strong> с обыскиваемым. Видеозапись их НЕ заменяет. Запрещено требовать снятия одежды (это освидетельствование). Составляется протокол.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Обыск помещения</strong></td>
+                        <td><span class="legal-ref">Ст. 182, 170 УПК РФ</span></td>
+                        <td>Только на основании судебного решения. Исключение: неотложные случаи (с уведомлением суда в течение 24 часов).</td>
+                        <td>Проводится с 2 понятыми. <strong>Допускается замена понятых видеозаписью</strong> (ч. 1.1 ст. 170 УПК РФ). Предложить выдать предметы добровольно.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Контроль и запись переговоров (ПН)</strong></td>
+                        <td><span class="legal-ref">Ст. 186 УПК РФ</span><span class="legal-ref">Ч. 4 ст. 8 ФЗ №144</span></td>
+                        <td>Допускается по уголовным делам о преступлениях <strong>средней тяжести</strong>, тяжких и особо тяжких преступлениях.</td>
+                        <td>Только по судебному решению. Результаты оформляются протоколом прослушивания и могут быть приобщены к делу как доказательства.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Контроль почтовых отправлений</strong></td>
+                        <td><span class="legal-ref">Ст. 6 ФЗ №144</span><span class="legal-ref">Ч. 4 ст. 8 ФЗ №144</span></td>
+                        <td>ОРМ, направленное на получение информации из почтовых, телеграфных и иных отправлений.</td>
+                        <td>Проводится <strong>только на основании судебного решения</strong>. Задержание и осмотр отправлений в учреждениях связи оформляется актом.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Оперативное внедрение (Легендирование)</strong></td>
+                        <td><span class="legal-ref">Ст. 6 ФЗ №144</span></td>
+                        <td>Введение сотрудника в преступную группу под вымышленной личностью для документирования преступлений.</td>
+                        <td>Требует письменного решения руководителя органа ОРД. Сотрудник вправе не раскрывать свою принадлежность к ФСБ.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================= СТРАНИЦА 3: СОСТАВЫ ПРЕСТУПЛЕНИЙ ================= -->
+    <div id="crimes-section" class="page-section">
+        <header>
+            <h1>Квалификация преступлений (УК РФ)</h1>
+            <div class="subtitle">Уголовный кодекс Российской Федерации · <span>Детализация составов и частей</span></div>
+        </header>
+
+        <div class="table-container">
+            <table id="crimesTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('crimesTable', 0)">Преступление ↕</th>
+                        <th onclick="sortTable('crimesTable', 1)">Статья УК РФ ↕</th>
+                        <th onclick="sortTable('crimesTable', 2)">Квалифицирующие признаки (Части) ↕</th>
+                        <th onclick="sortTable('crimesTable', 3)">Наказание (Максимум) ↕</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Получение взятки</strong></td>
+                        <td><span class="legal-ref">Ст. 290 УК РФ</span></td>
+                        <td>
+                            <strong>Ч. 1:</strong> Базовый состав.<br>
+                            <strong>Ч. 2:</strong> За незаконные действия + значительный размер (>25 тыс. руб.).<br>
+                            <strong>Ч. 3:</strong> Должностным лицом с использованием служебного положения.<br>
+                            <strong>Ч. 4:</strong> В крупном размере (>150 тыс. руб.) или группой лиц.<br>
+                            <strong>Ч. 5:</strong> В особо крупном размере (>1 млн руб.).
+                        </td>
+                        <td>До 15 лет лишения свободы (ч. 5) + штраф до 70-кратной суммы взятки.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Дача взятки</strong></td>
+                        <td><span class="legal-ref">Ст. 291 УК РФ</span></td>
+                        <td>
+                            <strong>Ч. 1:</strong> Базовый состав.<br>
+                            <strong>Ч. 2:</strong> Значительный размер (>25 тыс. руб.).<br>
+                            <strong>Ч. 3:</strong> Должностному лицу за незаконные действия.<br>
+                            <strong>Ч. 4:</strong> Группой лиц, в крупном размере (>150 тыс. руб.).<br>
+                            <strong>Ч. 5:</strong> В особо крупном размере (>1 млн руб.).
+                        </td>
+                        <td>До 15 лет лишения свободы (ч. 5) + штраф до 100-кратной суммы.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Государственная измена</strong></td>
+                        <td><span class="legal-ref">Ст. 275 УК РФ</span></td>
+                        <td>Шпионаж, выдача государственной тайны либо иное оказание помощи иностранному государству в деятельности, направленной против безопасности РФ. Субъект: только гражданин РФ.</td>
+                        <td>Лишение свободы от 12 до 20 лет.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Террористический акт</strong></td>
+                        <td><span class="legal-ref">Ст. 205 УК РФ</span></td>
+                        <td>Совершение взрыва, поджога или иных действий, создающих опасность гибели людей, с целью дестабилизации деятельности органов власти.</td>
+                        <td>От 10 до 20 лет или пожизненное лишение свободы.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Неправомерный доступ к компьютерной информации</strong></td>
+                        <td><span class="legal-ref">Ст. 272 УК РФ</span></td>
+                        <td>
+                            <strong>Ч. 1:</strong> Базовый состав.<br>
+                            <strong>Ч. 2:</strong> Из корыстной заинтересованности.<br>
+                            <strong>Ч. 3:</strong> Служебным лицом.<br>
+                            <strong>Ч. 4:</strong> Группой лиц, повлекшее тяжкие последствия.
+                        </td>
+                        <td>До 7 лет лишения свободы (ч. 4).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================= СТРАНИЦА 4: СТРУКТУРА ФСБ ================= -->
+    <div id="structure-section" class="page-section">
+        <header class="blue-header">
+            <h1>Организационная структура ФСБ России</h1>
+            <div class="subtitle">Иерархия: Службы → Департаменты/Управления · <span class="blue-span">Актуальная структура центрального аппарата</span></div>
+        </header>
+
+        <div class="hierarchy-block">
+            <div class="hierarchy-title">I. Службы ФСБ (Высший функциональный уровень)</div>
+            <div class="dept-grid">
+                <div class="dept-card">
+                    <h2 class="dept-abbr">СЭБ</h2>
+                    <p class="dept-full-name">Служба экономической безопасности</p>
+                    <span class="dept-info-label">Задачи:</span>
+                    <p class="dept-info-text">Борьба с преступлениями в экономической сфере, угрожающими безопасности государства (контрабанда, незаконный оборот стратегических ресурсов).</p>
+                </div>
+                <div class="dept-card blue-card">
+                    <h2 class="dept-abbr">СЗКСиБТ</h2>
+                    <p class="dept-full-name">Служба по защите конституционного строя и борьбе с терроризмом («Двойка»)</p>
+                    <span class="dept-info-label">Задачи:</span>
+                    <p class="dept-info-text">Контрразведка, борьба с терроризмом, экстремизмом и защита основ конституционного строя. Обладает максимальным объемом полномочий по ФЗ «Об ОРД».</p>
+                </div>
+                <div class="dept-card">
+                    <h2 class="dept-abbr">СОКР</h2>
+                    <p class="dept-full-name">Служба организационно-кадровой работы</p>
+                    <span class="dept-info-label">Задачи:</span>
+                    <p class="dept-info-text">Подбор и расстановка кадров, режимно-секретная работа, кадровый учет, мобилизационная подготовка.</p>
+                </div>
+                <div class="dept-card">
+                    <h2 class="dept-abbr">ПС ФСБ</h2>
+                    <p class="dept-full-name">Пограничная служба ФСБ России</p>
+                    <span class="dept-info-label">Задачи:</span>
+                    <p class="dept-info-text">Защита и охрана Государственной границы РФ, борьба с трансграничной преступностью.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="hierarchy-block">
+            <div class="hierarchy-title blue-title">II. Ключевые подразделения СЗКСиБТ («Двойки»)</div>
+            <div class="dept-grid">
+                <div class="dept-card blue-card">
+                    <h2 class="dept-abbr">ДКРО</h2>
+                    <p class="dept-full-name">Департамент контрразведывательных операций</p>
+                    <span class="dept-info-label">Суть:</span>
+                    <p class="dept-info-text">Выявление, предупреждение и пресечение разведывательной и иной деятельности спецслужб иностранных государств, направленной против безопасности РФ.</p>
+                </div>
+                <div class="dept-card blue-card">
+                    <h2 class="dept-abbr">УБТПЭ</h2>
+                    <p class="dept-full-name">Управление по борьбе с терроризмом и политическим экстремизмом</p>
+                    <span class="dept-info-label">Суть:</span>
+                    <p class="dept-info-text">Оперативное сопровождение дел о терроризме, выявление террористических ячеек и экстремистских организаций.</p>
+                </div>
+                <div class="dept-card blue-card">
+                    <h2 class="dept-abbr">Управление "М"</h2>
+                    <p class="dept-full-name">Управление военной контрразведки</p>
+                    <span class="dept-info-label">Суть:</span>
+                    <p class="dept-info-text">Контрразведывательное обеспечение Вооруженных Сил РФ и иных войск. Выявление шпионажа и диверсий в армии.</p>
+                </div>
+                <div class="dept-card blue-card">
+                    <h2 class="dept-abbr">Управление "П"</h2>
+                    <p class="dept-full-name">Управление по защите КС на режимных объектах</p>
+                    <span class="dept-info-label">Суть:</span>
+                    <p class="dept-info-text">Обеспечение безопасности на стратегических предприятиях, в ЗАТО и на объектах атомной промышленности.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="hierarchy-block">
+            <div class="hierarchy-title">III. Специализированные Управления</div>
+            <div class="dept-grid">
+                <div class="dept-card">
+                    <h2 class="dept-abbr">Управление "К"</h2>
+                    <p class="dept-full-name">Управление по защите КС в кредитно-финансовой сфере (в составе СЭБ)</p>
+                    <span class="dept-info-label">Суть:</span>
+                    <p class="dept-info-text">Контрразведывательное обеспечение банков и финансовых организаций. <strong>Не занимается общей киберпреступностью.</strong></p>
+                </div>
+                <div class="dept-card">
+                    <h2 class="dept-abbr">ЦИБ ФСБ</h2>
+                    <p class="dept-full-name">Центр информационной безопасности</p>
+                    <span class="dept-info-label">Суть:</span>
+                    <p class="dept-info-text">Именно это подразделение занимается борьбой с компьютерными преступлениями (ст. 272-274 УК РФ), защитой гостайны в ЭВМ и криптографией.</p>
+                </div>
+                <div class="dept-card">
+                    <h2 class="dept-abbr">ЦСН</h2>
+                    <p class="dept-full-name">Центр специального назначения</p>
+                    <span class="dept-info-label">Суть:</span>
+                    <p class="dept-info-text">Управления "А" («Альфа»), "В" («Вымпел») и УСО. Подразделения прямого действия для штурма и освобождения заложников.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <p>⚠️ Данный портал составлен на основе действующего законодательства РФ (по состоянию на 2024–2025 гг.) и адаптирован для строгого RP-отыгрыша.<br>
+        Нарушение процессуальных норм (ст. 75 УПК РФ) влечет признание доказательств недопустимыми.</p>
+        <p style="opacity: 0.5; margin-top: 10px;">Локальный сервер: localhost:8080 | Файл: index.html</p>
+    </div>
+</div>
+
+<script>
+    function switchPage(pageId, btnElement) {
+        document.querySelectorAll('.page-section').forEach(section => section.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.classList.remove('blue-active');
+        });
+
+        document.getElementById(pageId + '-section').classList.add('active');
+        btnElement.classList.add('active');
+        
+        if (pageId === 'structure' || pageId === 'proced') {
+            btnElement.classList.add('blue-active');
+        }
+    }
+
+    function sortTable(tableId, n) {
+        const table = document.getElementById(tableId);
+        let switching = true;
+        let dir = "asc";
+        let switchcount = 0;
+        
+        while (switching) {
+            switching = false;
+            const rows = table.rows;
+            for (let i = 1; i < (rows.length - 1); i++) {
+                let shouldSwitch = false;
+                const x = rows[i].getElementsByTagName("TD")[n];
+                const y = rows[i + 1].getElementsByTagName("TD")[n];
+                
+                if (dir === "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) { shouldSwitch = true; break; }
+                } else if (dir === "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) { shouldSwitch = true; break; }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount === 0 && dir === "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
